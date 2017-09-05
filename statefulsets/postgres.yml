@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres
+        image: postgres:9.5.8
         imagePullPolicy: Always
         env:
           - name: POSTGRES_USER

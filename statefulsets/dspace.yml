@@ -1,0 +1,81 @@
+# Add resource limits
+apiVersion: "apps/v1beta1"
+kind: StatefulSet
+metadata:
+  name: dspace
+spec:
+  serviceName: dspace
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dspace
+    spec:
+      containers:
+      - name: dspace
+        image: 270536341817.dkr.ecr.us-east-1.amazonaws.com/dspace:latest
+        env:
+          # These are not dspace values, but are used to bootstrap the container.
+          - name: POSTGRES_HOST
+            value: postgres
+          - name: PGPASSWORD
+            value: dspace
+          - name: POSTGRES_PORT
+            value: "5432"
+          # DSpace configs
+          - name: DSPACE_DIR
+            value: /dspace
+          - name: DSPACE_HOSTNAME
+            value: http://a21e9c30788c511e7b25e0648761fa5c-350127752.eu-west-1.elb.amazonaws.com
+          - name: DSPACE_BASEURL
+            value: ${dspace.hostname}
+          # DB configs
+          - name: DB_URL
+            value: jdbc:postgresql://postgres:5432/dspace
+          - name: DB_USERNAME
+            value: dspace
+          - name: DB_PASSWORD
+            value: dspace
+          # Mail configs
+          - name: MAIL_SERVER_USERNAME
+            value: AKIAJ4BHRQYR6OPYUBNQ
+          - name: MAIL_SERVER_PASSWORD
+            value: AnEfOS18K83fIJzZ9zf2vkjbx3M/1QEaXPqr1hYA2h/W
+          # S3 configs
+          - name: NAME
+            value: test
+          - name: S3_BUCKET_SIZE
+            value: 5TB
+        ports:
+          - name: dspace
+            containerPort: 80
+            protocol: TCP
+        volumeMounts:
+          - name: aws-config
+            mountPath: /config
+      initContainers:
+      - name: aws-bootstrap
+        image: jkosgei/aws-bootstrap
+        env:
+          # AWS Credentials
+          - name: NAME
+            value: test
+          - name: REGION
+            value: eu-west-1
+          - name: EMAIL
+            value: jonathan@saharacluster.com
+          - name: AWS_ACCESS_KEY_ID
+            value: AKIAJ73QY3NRFSS6VCEQ
+          - name: AWS_SECRET_ACCESS_KEY
+            value: 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
+        volumeMounts:
+          - name: aws-config
+            mountPath: /config
+  volumeClaimTemplates:
+  - metadata:
+      name: aws-config
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
