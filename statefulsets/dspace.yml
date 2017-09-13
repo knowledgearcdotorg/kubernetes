@@ -4,6 +4,7 @@ apiVersion: "apps/v1beta1"
 kind: StatefulSet
 metadata:
   name: dspace
+  namespace: $NAME
 spec:
   serviceName: dspace
   replicas: 1
@@ -33,7 +34,7 @@ spec:
             value: "5432"
           # DSpace configs
           - name: DSPACE_DIR
-            value: /dspace
+            value: /opt/dspace
           - name: DSPACE_HOSTNAME
             value: http://a21e9c30788c511e7b25e0648761fa5c-350127752.eu-west-1.elb.amazonaws.com
           - name: DSPACE_BASEURL
