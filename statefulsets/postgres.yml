@@ -18,7 +18,10 @@ spec:
           - name: POSTGRES_USER
             value: dspace
           - name: POSTGRES_PASSWORD
-            value: dspace
+            valueFrom:
+              secretKeyRef:
+                name: $NAME
+                key: password
           - name: POSTGRES_DB
             value: dspace
         ports:

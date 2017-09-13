@@ -28,6 +28,16 @@
 ```
     pip install awscli
 ```
+
+## Deploying a DSpace Instance
+
+```
+export NAME=who
+PASSWORD=`openssl rand -hex 32 | base64 | tr -d "\n"` envsubst < secrets/postgres.txt |  kubectl apply -f -
+envsubst < statefulsets/postgres.yml | kubectl apply -f -
+envsubst < statefulsets/dspace.yml | kubectl apply -f -
+```
+
 ## Deploying a Kubernetes cluster on AWS with kops
 
 

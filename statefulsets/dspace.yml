@@ -1,4 +1,5 @@
 # Add resource limits
+# Create secrets
 apiVersion: "apps/v1beta1"
 kind: StatefulSet
 metadata:
@@ -15,11 +16,19 @@ spec:
       - name: dspace
         image: 270536341817.dkr.ecr.us-east-1.amazonaws.com/dspace:latest
         env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: $NAME
+                key: password
           # These are not dspace values, but are used to bootstrap the container.
           - name: POSTGRES_HOST
             value: postgres
           - name: PGPASSWORD
-            value: dspace
+            valueFrom:
+              secretKeyRef:
+                name: $NAME
+                key: password
           - name: POSTGRES_PORT
             value: "5432"
           # DSpace configs
@@ -35,15 +44,18 @@ spec:
           - name: DB_USERNAME
             value: dspace
           - name: DB_PASSWORD
-            value: dspace
+            valueFrom:
+              secretKeyRef:
+                name: $NAME
+                key: password
           # Mail configs
-          - name: MAIL_SERVER_USERNAME
-            value: AKIAJ4BHRQYR6OPYUBNQ
-          - name: MAIL_SERVER_PASSWORD
-            value: AnEfOS18K83fIJzZ9zf2vkjbx3M/1QEaXPqr1hYA2h/W
+          - name: MAIL_SERVER
+            value: email-smtp.us-east-1.amazonaws.com
+          - name: MAIL_SERVER_PORT
+            value: '25'
           # S3 configs
           - name: NAME
-            value: test
+            value: $NAME
           - name: S3_BUCKET_SIZE
             value: 5TB
         ports:
@@ -59,15 +71,15 @@ spec:
         env:
           # AWS Credentials
           - name: NAME
-            value: test
+            value: $NAME
           - name: REGION
             value: eu-west-1
           - name: EMAIL
-            value: jonathan@saharacluster.com
+            value: webmaster@knowledgearc.com
           - name: AWS_ACCESS_KEY_ID
-            value: AKIAJ73QY3NRFSS6VCEQ
+            value: 
           - name: AWS_SECRET_ACCESS_KEY
-            value: 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
+            value: 
         volumeMounts:
           - name: aws-config
             mountPath: /config
