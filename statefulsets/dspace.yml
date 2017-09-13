@@ -82,9 +82,15 @@ spec:
           - name: EMAIL
             value: webmaster@knowledgearc.com
           - name: AWS_ACCESS_KEY_ID
-            value: 
+            valueFrom:
+              secretKeyRef:
+                name: aws
+                key: access_key
           - name: AWS_SECRET_ACCESS_KEY
-            value: 
+            valueFrom:
+              secretKeyRef:
+                name: aws
+                key: secret_key
         volumeMounts:
           - name: aws-config
             mountPath: /config
