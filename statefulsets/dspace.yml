@@ -16,6 +16,10 @@ spec:
       containers:
       - name: dspace
         image: 270536341817.dkr.ecr.us-east-1.amazonaws.com/dspace:latest
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/prestop.sh"]
         env:
           - name: POSTGRES_PASSWORD
             valueFrom:
