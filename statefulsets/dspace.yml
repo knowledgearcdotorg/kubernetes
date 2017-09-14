@@ -28,7 +28,7 @@ spec:
                 key: password
           # These are not dspace values, but are used to bootstrap the container.
           - name: POSTGRES_HOST
-            value: postgres
+            value: postgres.who
           - name: PGPASSWORD
             valueFrom:
               secretKeyRef:
@@ -43,7 +43,7 @@ spec:
             value: ${dspace.hostname}
           # DB configs
           - name: DB_URL
-            value: jdbc:postgresql://postgres:5432/dspace
+            value: jdbc:postgresql://postgres.who:5432/dspace
           - name: DB_USERNAME
             value: dspace
           - name: DB_PASSWORD
