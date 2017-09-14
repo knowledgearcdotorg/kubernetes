@@ -1,8 +1,10 @@
 #!/bin/bash
+GREEN='\033[1;32m'
 
 echo "Enter the organisation name:"
 read NAME
 export NAME=$NAME
+echo -e "${GREEN}"
 envsubst < namespaces/namespace.yml | kubectl apply -f -
 PASSWORD=`openssl rand -hex 16 | base64 | tr -d "\n"` envsubst < secrets/postgres.txt |  kubectl apply -f -
 envsubst < secrets/aws.yml | kubectl apply -f -

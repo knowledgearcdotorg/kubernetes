@@ -21,11 +21,6 @@ spec:
             exec:
               command: ["/prestop.sh"]
         env:
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: $NAME
-                key: password
           # These are not dspace values, but are used to bootstrap the container.
           - name: POSTGRES_HOST
             value: postgres.who
