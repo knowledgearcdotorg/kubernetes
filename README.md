@@ -33,13 +33,30 @@
 
 ```
 cd knowledgearc-kubernetes
-export NAME=who
-PASSWORD=`openssl rand -hex 16 | base64 | tr -d "\n"` envsubst < secrets/postgres.txt |  kubectl apply -f -
+echo "Organisation name:"
+read NAME
 envsubst < namespaces/namespace.yml | kubectl apply -f -
+PASSWORD=`openssl rand -hex 16 | base64 | tr -d "\n"` envsubst < secrets/postgres.txt |  kubectl apply -f -
+envsubst < secrets/aws.yml | kubectl apply -f -
 envsubst < services/postgres.yml | kubectl apply -f -
 envsubst < services/dspace.yml | kubectl apply -f -
 envsubst < statefulsets/postgres.yml | kubectl apply -f -
 envsubst < statefulsets/dspace.yml | kubectl apply -f -
+```
+
+## Deleting a DSpace Instance
+```
+export NAME=who
+envsubst < namespaces/namespace.yml | kubectl delete -f -
+# Deleting a namespace will delete all the resources under it
+
+# To delete individual instances for testing
+kubectl delete secrets $NAME
+envsubst < secrets/aws-bootstrap-creds.yml | kubectl delete -f -
+envsubst < services/postgres.yml | kubectl delete -f -
+envsubst < services/dspace.yml | kubectl delete -f -
+envsubst < statefulsets/postgres.yml | kubectl delete -f -
+envsubst < statefulsets/dspace.yml | kubectl delete -f -
 ```
 
 ## Deploying a Kubernetes cluster on AWS with kops

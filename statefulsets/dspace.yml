@@ -39,8 +39,6 @@ spec:
           # DSpace configs
           - name: DSPACE_DIR
             value: /opt/dspace
-          - name: DSPACE_HOSTNAME
-            value: http://a21e9c30788c511e7b25e0648761fa5c-350127752.eu-west-1.elb.amazonaws.com
           - name: DSPACE_BASEURL
             value: ${dspace.hostname}
           # DB configs
@@ -73,7 +71,33 @@ spec:
       initContainers:
       - name: aws-bootstrap
         image: jkosgei/aws-bootstrap
+        command:
+         - "bash"
+         - "-c"
+         - |
+          namespace="default";
+          service="dspace";
+          cacert="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt";
+          token="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)";
+          while true; do
+          service=$(curl -s --cacert $cacert --header "Authorization:Bearer $token" https://kubernetes.default.svc/api/v1/namespaces/$namespace/services/$service);
+          length=$(echo $service | jq -r '.status.loadBalancer.ingress[0].hostname | length');
+          if [ ! "$length" == "0" ]; 
+              then break;
+          fi
+            done
+          echo "export DSPACE_HOSTNAME=$loadbalancer" >>/config/config && /entry.sh;
         env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws
+                key: access
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws
+                key: secret
           # AWS Credentials
           - name: NAME
             value: $NAME
@@ -81,16 +105,6 @@ spec:
             value: eu-west-1
           - name: EMAIL
             value: webmaster@knowledgearc.com
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: aws
-                key: access_key
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: aws
-                key: secret_key
         volumeMounts:
           - name: aws-config
             mountPath: /config
