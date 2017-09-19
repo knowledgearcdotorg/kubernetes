@@ -23,7 +23,7 @@ spec:
         env:
           # These are not dspace values, but are used to bootstrap the container.
           - name: POSTGRES_HOST
-            value: postgres.who
+            value: postgres.$NAME
           - name: PGPASSWORD
             valueFrom:
               secretKeyRef:
@@ -36,9 +36,10 @@ spec:
             value: /opt/dspace
           - name: DSPACE_BASEURL
             value: ${dspace.hostname}
+          - name: DSPACE_HOSTNAME
           # DB configs
           - name: DB_URL
-            value: jdbc:postgresql://postgres.who:5432/dspace
+            value: jdbc:postgresql://postgres.$NAME:5432/dspace
           - name: DB_USERNAME
             value: dspace
           - name: DB_PASSWORD
@@ -70,7 +71,7 @@ spec:
          - "bash"
          - "-c"
          - |
-          namespace="default";
+          namespace="$NAME";
           service="dspace";
           cacert="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt";
           token="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)";
@@ -81,7 +82,7 @@ spec:
               then break;
           fi
             done
-          echo "export DSPACE_HOSTNAME=$loadbalancer" >>/config/config && /entry.sh;
+          /entry.sh;
         env:
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
@@ -100,6 +101,8 @@ spec:
             value: eu-west-1
           - name: EMAIL
             value: webmaster@knowledgearc.com
+          - name: ZONE_ID
+            value: Z1D2KCIS9PPXAM
         volumeMounts:
           - name: aws-config
             mountPath: /config

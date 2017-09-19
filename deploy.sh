@@ -1,8 +1,7 @@
 #!/bin/bash
 GREEN='\033[1;32m'
 
-echo "Enter the organisation name:"
-read NAME
+read -p "Enter the organisation name:" NAME
 export NAME=$NAME
 echo -e "${GREEN}"
 envsubst < namespaces/namespace.yml | kubectl apply -f -

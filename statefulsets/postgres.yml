@@ -14,6 +14,10 @@ spec:
       containers:
       - name: postgres
         image: postgres:9.5.8
+        command:
+         - "bash"
+         - "-c"
+         - "export POSTGRES_PASSWORD=$(echo $POSTGRES_PASSWORD | tr -d '\n') && docker-entrypoint.sh postgres"
         imagePullPolicy: Always
         env:
           - name: POSTGRES_USER
