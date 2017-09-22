@@ -16,10 +16,6 @@ spec:
       containers:
       - name: dspace
         image: 270536341817.dkr.ecr.us-east-1.amazonaws.com/dspace:latest
-        lifecycle:
-          preStop:
-            exec:
-              command: ["/prestop.sh"]
         env:
           # These are not dspace values, but are used to bootstrap the container.
           - name: POSTGRES_HOST
@@ -37,6 +33,7 @@ spec:
           - name: DSPACE_BASEURL
             value: ${dspace.hostname}
           - name: DSPACE_HOSTNAME
+            value: $NAME.archive.knowledgearc.net
           # DB configs
           - name: DB_URL
             value: jdbc:postgresql://postgres.$NAME:5432/dspace
@@ -106,9 +103,18 @@ spec:
         volumeMounts:
           - name: aws-config
             mountPath: /config
+          - name: solr
+            mountPath: /opt/dspace/solr/statistics
   volumeClaimTemplates:
   - metadata:
       name: aws-config
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
+  - metadata:
+      name: solr
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
